@@ -1,4 +1,5 @@
 # Distributed Systems Assignment 1
+All clients share the same stack in this implementation.
 
 ## Execution
 1. Download JUnit Console Launcher.
