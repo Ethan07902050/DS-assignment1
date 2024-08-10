@@ -11,12 +11,12 @@ public class CalculatorImpl implements Calculator {
         stack = new Stack<>();
     } 
 
-    public void pushValue(int val) 
+    public synchronized void pushValue(int val) 
         throws RemoteException {
         stack.push(val);
     }
  
-    public void pushOperation(String operator) 
+    public synchronized void pushOperation(String operator) 
         throws RemoteException {
         if (operator.equals("min")) pushMin();
         else if (operator.equals("max")) pushMax();
@@ -24,18 +24,18 @@ public class CalculatorImpl implements Calculator {
         else if (operator.equals("gcd")) pushGcd();
     }
 
-    public int pop() throws RemoteException {
+    public synchronized int pop() throws RemoteException {
         if (stack.isEmpty()) {
             throw new RuntimeException("Stack is empty");
         }
         return stack.pop();
     }
 
-    public boolean isEmpty() throws RemoteException {
+    public synchronized boolean isEmpty() throws RemoteException {
         return stack.isEmpty();
     }
 
-    public int delayPop(int millis) throws RemoteException, InterruptedException {
+    public synchronized int delayPop(int millis) throws RemoteException, InterruptedException {
         Thread.sleep(millis); // Delay for the specified time
         if (stack.isEmpty()) {
             throw new RuntimeException("Stack is empty");
@@ -59,7 +59,7 @@ public class CalculatorImpl implements Calculator {
     }
 
     // Method to push the minimum value of all popped values
-    private void pushMin() {
+    private synchronized void pushMin() {
         if (stack.isEmpty()) {
             return;
         }
@@ -71,7 +71,7 @@ public class CalculatorImpl implements Calculator {
     }
 
     // Method to push the maximum value of all popped values
-    private void pushMax() {
+    private synchronized void pushMax() {
         if (stack.isEmpty()) {
             return;
         }
@@ -83,19 +83,21 @@ public class CalculatorImpl implements Calculator {
     }
 
     // Method to push the LCM of all popped values
-    private void pushLcm() {
+    private synchronized void pushLcm() {
         if (stack.isEmpty()) {
             return;
         }
         int lcmValue = stack.pop();
         while (!stack.isEmpty()) {
-            lcmValue = lcm(lcmValue, stack.pop());
+            
+            int stackTop = stack.pop();
+            lcmValue = lcm(lcmValue, stackTop);
         }
         stack.push(lcmValue);
     }
 
     // Method to push the GCD of all popped values
-    public void pushGcd() {
+    public synchronized void pushGcd() {
         if (stack.isEmpty()) {
             return;
         }
